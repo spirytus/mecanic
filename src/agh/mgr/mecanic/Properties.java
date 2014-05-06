@@ -8,9 +8,11 @@ package agh.mgr.mecanic;
  * To change this template use File | Settings | File Templates.
  */
 public class Properties {
-    public static final double BASE_VX = 16000.0;
-    public static final double BASE_VY = 16000.0;
-    public static final double BASE_WZ = 15.0;
+    public static final double BASE_VX = 000.0;
+    public static final double BASE_VY = 12000.0;
+    public static final double BASE_WZ = 30.0;
+
+    public static double ANGLE = 0.01;
 
     public static final double R = 50.0;
     public static final double L1 = 196.0;

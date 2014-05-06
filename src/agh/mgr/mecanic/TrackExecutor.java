@@ -1,10 +1,9 @@
 package agh.mgr.mecanic;
-
+import org.apache.log4j.Logger;
 import pl.edu.agh.amber.common.AmberClient;
-import pl.edu.agh.amber.roboclaw.MotorsCurrentSpeed;
 import pl.edu.agh.amber.roboclaw.RoboclawProxy;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,12 +13,15 @@ import java.io.*;
  * To change this template use File | Settings | File Templates.
  */
 public class TrackExecutor {
+    static Logger log = Logger.getLogger(
+            TrackExecutor.class.getName());
     public static void main(String args[]){
         (new TrackExecutor()).startDemo();
 
     }
 
     public void startDemo() {
+
         AmberClient client;
         try {
             client = new AmberClient("192.168.2.201", 26233);
@@ -38,10 +40,16 @@ public class TrackExecutor {
         int interval = track.getInterval();
 
         try {
-            VehicleMotion motion = transformer.transform(tracks[0]);
-            for (int i = 0; i < 100; i++) {
 
-                roboclawProxy.sendMotorsCommand((int) motion.getLeftFront(), (int) motion.getRightFront(), (int) motion.getLeftBack(), (int) motion.getRightBack());
+            for (int i = 0; i < 30; i++) {
+                Motion motion = tracks[0];
+//                Motion newMotion = new Motion(motion.getVy()* Math.sin(Math.toRadians(Properties.ANGLE*i)),
+//                        motion.getVy()* Math.cos(Math.toRadians(Properties.ANGLE*i)),
+//                        motion.getWt());
+                System.out.println(Properties.ANGLE*i);
+                //VehicleMotion vehicleMotion = transformer.transform(newMotion);
+                VehicleMotion vehicleMotion = transformer.transform(motion);
+                roboclawProxy.sendMotorsCommand((int) vehicleMotion.getLeftFront(), (int) vehicleMotion.getRightFront(), (int) vehicleMotion.getLeftBack(), (int) vehicleMotion.getRightBack());
                 Thread.sleep(100);
 
             }
