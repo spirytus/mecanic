@@ -5,13 +5,7 @@ import pl.edu.agh.amber.roboclaw.RoboclawProxy;
 
 import java.io.IOException;
 
-/**
- * Created with IntelliJ IDEA.
- * User: maciejmarczynski
- * Date: 17.03.2014
- * Time: 10:26
- * To change this template use File | Settings | File Templates.
- */
+
 public class TrackExecutor {
     static Logger log = Logger.getLogger(
             TrackExecutor.class.getName());
