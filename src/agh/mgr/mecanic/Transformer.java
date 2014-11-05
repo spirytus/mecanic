@@ -10,11 +10,11 @@ public class Transformer {
                 {1.0, 1.0, -(HALF_OF_HEIGHT + HALF_OF_WIDTH)},
                 {1.0 , -1.0, HALF_OF_HEIGHT + HALF_OF_WIDTH},
                 {1.0, -1.0, -(HALF_OF_HEIGHT + HALF_OF_WIDTH)},
-                {1.0, 1.0, HALF_OF_HEIGHT + HALF_OF_HEIGHT}
+                {1.0, 1.0, HALF_OF_HEIGHT + HALF_OF_WIDTH}
         });
         DoubleMatrix matrix3x1 = new DoubleMatrix(new double[][]{
-                {motion.getVy()},
                 {motion.getVx()},
+                {motion.getVy()},
                 {motion.getWt()}
         });
         DoubleMatrix result = matrix4x3.mmul(matrix3x1).mmul(1/ WHEEL_RADIUS);

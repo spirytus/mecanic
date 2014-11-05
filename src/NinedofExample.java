@@ -20,17 +20,18 @@ public class NinedofExample {
     public void runDemo() {
         AmberClient client;
         try {
-            client = new AmberClient("192.168.2.205", 26233);
+            System.out.println("ŁĄCZĘ");
+            client = new AmberClient("192.168.2.201", 26233);
 
         } catch (IOException e) {
             System.out.println("Unable to connect to robot: " + e);
             return;
         }
-
+        System.out.println("PO POLACZENIU");
         NinedofProxy ninedofProxy = new NinedofProxy(client, 0);
 
         try {
-
+            System.out.println("DAJESZZZ!!!!");
             // Synchronous receiving
             for (int i = 0; i < 10; i++) {
                 NinedofData ninedofData = ninedofProxy.getAxesData(true, true,

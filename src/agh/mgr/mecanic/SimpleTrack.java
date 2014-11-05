@@ -14,13 +14,16 @@ public class SimpleTrack {
 
     public SimpleTrack(){
         this.interval = 10000;
-        this.track = new Motion[]{
-                new Motion(Properties.BASE_VX, Properties.BASE_VY, Properties.BASE_WZ),
-                //new Motion(Properties.BASE_VX*0.5, Properties.BASE_VY*0.5, Properties.BASE_WZ*2),
-                //new Motion(Properties.BASE_VX, Properties.BASE_VY, Properties.BASE_WZ),
-                //new Motion(Properties.BASE_VX*0.5, Properties.BASE_VY*0.5, Properties.BASE_WZ*2),
-                //new Motion(Properties.BASE_VX, 0.0, Properties.BASE_WZ*2)
-        };
+        Motion[] a = new Motion[10];
+        for(int i = 0; i<10; i++){
+            a[i] = new Motion(Properties.BASE_VX*(1-i*0.1), Properties.BASE_VY*(i*0.1), Properties.BASE_WZ);
+        }
+
+        for(int i = 0; i<10; i++){
+            a[i] = new Motion(Properties.BASE_VX, Properties.BASE_VY*0.6, Properties.BASE_WZ);
+        }
+
+        this.track = a;
     }
 
     public Motion[] getTrack() {

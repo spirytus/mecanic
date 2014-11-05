@@ -29,4 +29,7 @@ public class VehicleMotion {
     public double getRightBack() {
         return rightBack;
     }
+    public String toString(){
+        return "LF:" + leftFront + " RF:" + rightFront + " RB:" + rightBack + "LB:" + leftBack;
+    }
 }
