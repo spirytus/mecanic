@@ -1,4 +1,4 @@
-package agh.mgr.mecanic;
+package agh.mgr.mecanic.misc.examples;
 
 import agh.mgr.mecanic.data.SerializableScanHistory;
 import pl.edu.agh.amber.common.AmberClient;
@@ -17,10 +17,12 @@ public class HohujoSkany implements Runnable {
     public int repetitions;
 
     public HohujoSkany(AmberClient client, String dumpfile, int repetitions, int resolution){
+
         this.client=client;
         this.dumpfile=dumpfile;
         this.repetitions=repetitions;
         this.resolution=resolution;
+
     }
 
     @Override

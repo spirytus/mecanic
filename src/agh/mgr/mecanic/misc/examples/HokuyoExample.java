@@ -1,3 +1,5 @@
+package agh.mgr.mecanic.misc.examples;
+
 import pl.edu.agh.amber.common.AmberClient;
 import pl.edu.agh.amber.common.CyclicDataListener;
 import pl.edu.agh.amber.hokuyo.HokuyoProxy;

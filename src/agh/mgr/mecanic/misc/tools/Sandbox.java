@@ -1,4 +1,4 @@
-package agh.mgr.mecanic.tools;
+package agh.mgr.mecanic.misc.tools;
 
 import agh.mgr.mecanic.data.SerializableScanHistory;
 

@@ -9,16 +9,13 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
-/**
- * Created by maciejmarczynski on 17.03.15.
- */
-public class SpeedLogger implements Runnable {
+public class SpeedLoggerAThread implements Runnable {
     public int resolution;
     public int duration;
     public RoboclawProxy roboclawProxy;
     public String filename;
 
-    public SpeedLogger(int resolution, RoboclawProxy roboclawProxy, int duration, String filename){
+    public SpeedLoggerAThread(int resolution, RoboclawProxy roboclawProxy, int duration, String filename){
         this.resolution=resolution;
         this.duration=duration;
         this.roboclawProxy=roboclawProxy;
@@ -48,11 +45,11 @@ public class SpeedLogger implements Runnable {
             }
             pw.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 }

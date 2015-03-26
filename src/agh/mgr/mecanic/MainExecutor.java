@@ -1,24 +1,21 @@
 package agh.mgr.mecanic;
+import agh.mgr.mecanic.data.modifiers.Transformer;
+import agh.mgr.mecanic.data.simple.VehicleOverallSpeed;
+import agh.mgr.mecanic.data.simple.VehicleWheelsSpeed;
+import agh.mgr.mecanic.data.tracks.SimpleTrack;
+import agh.mgr.mecanic.misc.examples.HohujoSkany;
 import org.apache.log4j.Logger;
 import pl.edu.agh.amber.common.AmberClient;
-import pl.edu.agh.amber.common.CyclicDataListener;
-import pl.edu.agh.amber.hokuyo.HokuyoProxy;
-import pl.edu.agh.amber.hokuyo.MapPoint;
-import pl.edu.agh.amber.hokuyo.Scan;
-import pl.edu.agh.amber.roboclaw.MotorsCurrentSpeed;
 import pl.edu.agh.amber.roboclaw.RoboclawProxy;
 
 import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
 
 
-
-public class TrackExecutor {
+public class MainExecutor {
     static Logger log = Logger.getLogger(
-            TrackExecutor.class.getName());
+            MainExecutor.class.getName());
     public static void main(String args[]){
-        (new TrackExecutor()).startDemo("SAMPLE.txt", 100, 7500);
+        (new MainExecutor()).startDemo("SAMPLE.txt", 100, 7500);
     }
 
     public void startDemo(String file, int resolution, int duration_of_show) {
@@ -38,14 +35,14 @@ public class TrackExecutor {
         //RotationalTrack track = new RotationalTrack();
         //RotationalTransformer transformer = new RotationalTransformer();
 
-        Motion[] tracks = track.getTrack();
+        VehicleOverallSpeed[] tracks = track.getTrack();
         int interval = track.getInterval();
 
         final String filename =  file;
         final int res = resolution;
         final int duration = duration_of_show/res;
 
-        SpeedLogger speedLogger = new SpeedLogger(res, roboclawProxy, duration, filename);
+        SpeedLoggerAThread speedLogger = new SpeedLoggerAThread(res, roboclawProxy, duration, filename);
         Thread speedLoggerThread = new Thread(speedLogger);
 
         HohujoSkany hohujoskany = new HohujoSkany(client, "/Users/maciejmarczynski/SKAAN.out", 75, 100);
@@ -61,15 +58,15 @@ public class TrackExecutor {
             hohujo.start();
             Thread.sleep(20);
 
-            for(Motion motion: tracks){
-                VehicleMotion vehicleMotion = transformer.transform(motion);
+            for(VehicleOverallSpeed motion: tracks){
+                VehicleWheelsSpeed vehicleWheelsSpeed = transformer.transform(motion);
 
                 for (int i = 0; i <1; i++) {
                     roboclawProxy.sendMotorsCommand(
-                            (int) vehicleMotion.getLeftFront(),
-                            (int) vehicleMotion.getRightFront(),
-                            (int) vehicleMotion.getLeftBack(),
-                            (int) vehicleMotion.getRightBack());
+                            (int) vehicleWheelsSpeed.getLeftFront(),
+                            (int) vehicleWheelsSpeed.getRightFront(),
+                            (int) vehicleWheelsSpeed.getLeftBack(),
+                            (int) vehicleWheelsSpeed.getRightBack());
                     Thread.sleep(1500);
 
                 }

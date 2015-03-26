@@ -1,4 +1,4 @@
-package agh.mgr.mecanic;
+package agh.mgr.mecanic.misc.examples.archive;
 
 import java.awt.image.BufferedImage;
 import java.awt.*;

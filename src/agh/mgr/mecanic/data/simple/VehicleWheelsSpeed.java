@@ -1,12 +1,13 @@
-package agh.mgr.mecanic;
+package agh.mgr.mecanic.data.simple;
 
-public class VehicleMotion {
+public class VehicleWheelsSpeed {
+
     private final double leftFront;
     private final double rightFront;
     private final double leftBack;
     private final double rightBack;
 
-    public VehicleMotion(double leftFront, double rightFront, double leftBack, double rightBack){
+    public VehicleWheelsSpeed(double leftFront, double rightFront, double leftBack, double rightBack){
 
         this.leftFront = leftFront;
         this.rightFront = rightFront;

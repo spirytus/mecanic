@@ -1,12 +1,12 @@
-package agh.mgr.mecanic;
+package agh.mgr.mecanic.data.simple;
 
-public class Motion {
+public class VehicleOverallSpeed {
 
     private double vx;
     private double vy;
     private double wt;
 
-    public Motion(double Vx, double Vy, double Wt){
+    public VehicleOverallSpeed(double Vx, double Vy, double Wt){
         vx = Vx;
         vy = Vy;
         wt = Wt;

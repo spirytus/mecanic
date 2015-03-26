@@ -1,20 +1,15 @@
-package agh.mgr.mecanic;
+package agh.mgr.mecanic.data.modifiers;
 
-/**
- * Created with IntelliJ IDEA.
- * User: maciek
- * Date: 17.09.2014
- * Time: 13:06
- * To change this template use File | Settings | File Templates.
- */
-
+import agh.mgr.mecanic.data.simple.VehicleOverallSpeed;
+import agh.mgr.mecanic.data.simple.VehicleWheelsSpeed;
 import org.jblas.DoubleMatrix;
 
-import static agh.mgr.mecanic.Properties.*;
+import static agh.mgr.mecanic.data.Properties.*;
 
 
 public class RotationalTransformer {
-    public VehicleMotion transform(Motion motion){
+    public VehicleWheelsSpeed transform(VehicleOverallSpeed motion){
+        //TODO: Review both with Science -> is it necessary ?
 //        DoubleMatrix matrix4x3 = new DoubleMatrix(new double[][]{
 //                {1.0, 1.0, -(FRONT + HALF_OF_WIDTH)},
 //                {1.0 , -1.0, FRONT + HALF_OF_WIDTH},
@@ -33,7 +28,6 @@ public class RotationalTransformer {
                 {motion.getWt()}
         });
         DoubleMatrix result = matrix4x3.mmul(matrix3x1).mmul(1/ WHEEL_RADIUS);
-        //System.out.println(result);
-        return new VehicleMotion(result.get(0), result.get(1), result.get(2), result.get(3));
+        return new VehicleWheelsSpeed(result.get(0), result.get(1), result.get(2), result.get(3));
     }
 }

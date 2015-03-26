@@ -1,5 +1,7 @@
-package agh.mgr.mecanic;
+package agh.mgr.mecanic.data;
 
+
+//TODO: load from app.properties
 public class Properties {
     public static final double BASE_VX = 5000.0;
     public static final double BASE_VY = BASE_VX;

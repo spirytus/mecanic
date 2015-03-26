@@ -3,6 +3,7 @@ package agh.mgr.mecanic;
 import pl.edu.agh.amber.hokuyo.MapPoint;
 
 import java.util.*;
+// TODO: REVIEW
 
 // TODO's:
 // 1. Implement linear regression.
@@ -90,6 +91,7 @@ public class Positioner {
         }
         return points;
     }
+
     public static List<List<MapPoint>> extractWalls(List<MapPoint> scannedPoints, List<Integer> edgeIndices){
         List<List<MapPoint>> listOfWalls = new LinkedList<List<MapPoint>>();
         int beginOfWall = 0;
@@ -100,6 +102,7 @@ public class Positioner {
         listOfWalls.add(scannedPoints.subList(beginOfWall+1, scannedPoints.size()-1));
         return listOfWalls;
     }
+
     public static class Point{
         public double x;
         public double y;
@@ -111,6 +114,7 @@ public class Positioner {
             return "(X: " + this.x + ", Y: " + this.y + ")\n";
         }
     }
+
     public static List<MapPoint> getScannedPoints(){
         List<MapPoint> position = new LinkedList<MapPoint>();
         double wallDistance = 10;
@@ -118,7 +122,7 @@ public class Positioner {
         for(int i=-45; i<46; i++ ){
             double angle = i;
             double kont = Math.abs(i);
-            double distance = wallDistance/Math.cos(Math.toRadians(45-kont));
+            double distance = wallDistance/Math.cos(Math.toRadians(45-kont)); // TODO: YAGNI - MapPoint.xposition
             position.add(new MapPoint(distance, angle, 1));
         }
         return position;
