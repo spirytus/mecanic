@@ -1,14 +1,13 @@
 package agh.mgr.mecanic.data.simple;
 
-public class VehicleWheelsSpeed {
+public class WheelsVelocity {
 
     private final double leftFront;
     private final double rightFront;
     private final double leftBack;
     private final double rightBack;
 
-    public VehicleWheelsSpeed(double leftFront, double rightFront, double leftBack, double rightBack){
-
+    public WheelsVelocity(double leftFront, double rightFront, double leftBack, double rightBack){
         this.leftFront = leftFront;
         this.rightFront = rightFront;
         this.leftBack = leftBack;
@@ -30,6 +29,7 @@ public class VehicleWheelsSpeed {
     public double getRightBack() {
         return rightBack;
     }
+
     public String toString(){
         return "LF:" + leftFront + " RF:" + rightFront + " RB:" + rightBack + "LB:" + leftBack;
     }

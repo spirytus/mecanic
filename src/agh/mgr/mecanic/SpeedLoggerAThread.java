@@ -9,6 +9,9 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
+/*
+ ATM unused
+ */
 public class SpeedLoggerAThread implements Runnable {
     public int resolution;
     public int duration;

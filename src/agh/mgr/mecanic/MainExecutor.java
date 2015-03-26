@@ -1,14 +1,14 @@
 package agh.mgr.mecanic;
-import agh.mgr.mecanic.data.modifiers.Transformer;
-import agh.mgr.mecanic.data.simple.VehicleOverallSpeed;
-import agh.mgr.mecanic.data.simple.VehicleWheelsSpeed;
+
+import agh.mgr.mecanic.data.simple.VelocityVector;
+import agh.mgr.mecanic.data.simple.WheelsVelocity;
 import agh.mgr.mecanic.data.tracks.SimpleTrack;
 import agh.mgr.mecanic.misc.examples.HohujoSkany;
 import org.apache.log4j.Logger;
 import pl.edu.agh.amber.common.AmberClient;
 import pl.edu.agh.amber.roboclaw.RoboclawProxy;
 
-import java.io.*;
+import java.io.IOException;
 
 
 public class MainExecutor {
@@ -31,11 +31,8 @@ public class MainExecutor {
         final RoboclawProxy roboclawProxy = new RoboclawProxy(client, 0);
 
         SimpleTrack track = new SimpleTrack();
-        Transformer transformer = new Transformer();
-        //RotationalTrack track = new RotationalTrack();
-        //RotationalTransformer transformer = new RotationalTransformer();
 
-        VehicleOverallSpeed[] tracks = track.getTrack();
+        VelocityVector[] tracks = track.getTrack();
         int interval = track.getInterval();
 
         final String filename =  file;
@@ -58,15 +55,15 @@ public class MainExecutor {
             hohujo.start();
             Thread.sleep(20);
 
-            for(VehicleOverallSpeed motion: tracks){
-                VehicleWheelsSpeed vehicleWheelsSpeed = transformer.transform(motion);
+            for(VelocityVector velocityVector: tracks){
+                WheelsVelocity wheelsVelocity = velocityVector.toWheelsVelocity();
 
                 for (int i = 0; i <1; i++) {
                     roboclawProxy.sendMotorsCommand(
-                            (int) vehicleWheelsSpeed.getLeftFront(),
-                            (int) vehicleWheelsSpeed.getRightFront(),
-                            (int) vehicleWheelsSpeed.getLeftBack(),
-                            (int) vehicleWheelsSpeed.getRightBack());
+                            (int) wheelsVelocity.getLeftFront(),
+                            (int) wheelsVelocity.getRightFront(),
+                            (int) wheelsVelocity.getLeftBack(),
+                            (int) wheelsVelocity.getRightBack());
                     Thread.sleep(1500);
 
                 }

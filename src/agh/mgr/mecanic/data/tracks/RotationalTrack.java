@@ -1,7 +1,7 @@
 package agh.mgr.mecanic.data.tracks;
 
 import agh.mgr.mecanic.data.Properties;
-import agh.mgr.mecanic.data.simple.VehicleOverallSpeed;
+import agh.mgr.mecanic.data.simple.VelocityVector;
 
 
 //TODO: Load it from app.properties ?
@@ -14,21 +14,21 @@ import agh.mgr.mecanic.data.simple.VehicleOverallSpeed;
 public class RotationalTrack {
 
     private int interval;
-    private VehicleOverallSpeed[] track;
+    private VelocityVector[] track;
 
     public RotationalTrack(){
         this.interval = 10000;
-        this.track = new VehicleOverallSpeed[]{
+        this.track = new VelocityVector[]{
                // new Motion(Properties.BASE_VX, 0, 0),
               //  new Motion(-Properties.BASE_VX, 0, 0),
               //  new Motion(0, Properties.BASE_VY, 0),
               //  new Motion(0, -Properties.BASE_VY, 0),
-                new VehicleOverallSpeed(0, 0, Properties.BASE_WZ),
-                new VehicleOverallSpeed(0, 0, -Properties.BASE_WZ)
+                new VelocityVector(0, 0, Properties.BASE_WZ),
+                new VelocityVector(0, 0, -Properties.BASE_WZ)
         };
     }
 
-    public VehicleOverallSpeed[] getTrack() {
+    public VelocityVector[] getTrack() {
         return track;
     }
 
