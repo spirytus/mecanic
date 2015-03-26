@@ -7,8 +7,10 @@ package agh.mgr.mecanic;
  * Time: 13:06
  * To change this template use File | Settings | File Templates.
  */
-import static agh.mgr.mecanic.Properties.*;
+
 import org.jblas.DoubleMatrix;
+
+import static agh.mgr.mecanic.Properties.*;
 
 
 public class RotationalTransformer {

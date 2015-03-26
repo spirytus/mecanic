@@ -1,9 +1,9 @@
-import java.io.IOException;
-
 import pl.edu.agh.amber.common.AmberClient;
 import pl.edu.agh.amber.common.CyclicDataListener;
 import pl.edu.agh.amber.ninedof.NinedofData;
 import pl.edu.agh.amber.ninedof.NinedofProxy;
+
+import java.io.IOException;
 
 /**
  * 9DOF sensor proxy example. Receives data cyclicly and synchronously.

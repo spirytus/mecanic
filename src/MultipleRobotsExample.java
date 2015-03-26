@@ -1,10 +1,10 @@
+import pl.edu.agh.amber.common.AmberClient;
+import pl.edu.agh.amber.roboclaw.RoboclawProxy;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import pl.edu.agh.amber.common.AmberClient;
-import pl.edu.agh.amber.roboclaw.RoboclawProxy;
 
 public class MultipleRobotsExample {
 
