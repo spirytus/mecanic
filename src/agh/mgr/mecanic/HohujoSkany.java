@@ -1,7 +1,7 @@
 package agh.mgr.mecanic;
 
+import agh.mgr.mecanic.data.SerializableScanHistory;
 import pl.edu.agh.amber.common.AmberClient;
-import pl.edu.agh.amber.common.CyclicDataListener;
 import pl.edu.agh.amber.hokuyo.HokuyoProxy;
 import pl.edu.agh.amber.hokuyo.MapPoint;
 import pl.edu.agh.amber.hokuyo.Scan;
@@ -41,7 +41,7 @@ public class HohujoSkany implements Runnable {
 //            e.printStackTrace();
 //        }
 
-        GatheredScans skany = new GatheredScans();
+        SerializableScanHistory skany = new SerializableScanHistory();
         for(int i=0; i<this.repetitions-10; i++){
             try {
                 System.out.println("DODAJE PKTY");
@@ -61,7 +61,7 @@ public class HohujoSkany implements Runnable {
             }
             finally {
                 System.out.println("ZRZUCAM PKTY");
-                HistorySerializer.dumpScans(skany, this.dumpfile);
+                SerializableScanHistory.dumpScans(skany, this.dumpfile);
             }
         }
 
