@@ -8,8 +8,6 @@ import java.util.List;
 
 public class Sandbox {
     public static void main(String []args){
-
-
-        List<List<MapPoint>> history = SerializableScanHistory.loadScans("/Users/maciejmarczynski/SKAAN.out");
+        List<List<MapPoint>> history = SerializableScanHistory.loadScans("examples/skan001.out");
     }
 }
