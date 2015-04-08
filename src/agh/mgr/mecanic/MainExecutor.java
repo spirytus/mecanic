@@ -3,17 +3,15 @@ package agh.mgr.mecanic;
 import agh.mgr.mecanic.data.simple.VelocityVector;
 import agh.mgr.mecanic.data.simple.WheelsVelocity;
 import agh.mgr.mecanic.data.tracks.SimpleTrack;
-import agh.mgr.mecanic.misc.examples.HohujoSkany;
+import agh.mgr.mecanic.misc.examples.PositionResolver;
 import org.apache.log4j.Logger;
 import pl.edu.agh.amber.common.AmberClient;
 import pl.edu.agh.amber.roboclaw.RoboclawProxy;
 
 import java.io.IOException;
 
-
 public class MainExecutor {
-    static Logger log = Logger.getLogger(
-            MainExecutor.class.getName());
+    static Logger log = Logger.getLogger(MainExecutor.class.getName());
     public static void main(String args[]){
         (new MainExecutor()).startDemo("SAMPLE.txt", 100, 7500);
     }
@@ -23,7 +21,6 @@ public class MainExecutor {
         final AmberClient client;
         try {
             client = new AmberClient("192.168.2.209", 26233);
-
         } catch (IOException e) {
             System.out.println("Unable to connect to robot: " + e);
             return;
@@ -32,7 +29,7 @@ public class MainExecutor {
 
         SimpleTrack track = new SimpleTrack();
 
-        VelocityVector[] tracks = track.getTrack();
+        VelocityVector[] velocityVectors = track.getTrack();
         int interval = track.getInterval();
 
         final String filename =  file;
@@ -42,7 +39,7 @@ public class MainExecutor {
         SpeedLoggerAThread speedLogger = new SpeedLoggerAThread(res, roboclawProxy, duration, filename);
         Thread speedLoggerThread = new Thread(speedLogger);
 
-        HohujoSkany hohujoskany = new HohujoSkany(client, "/Users/maciejmarczynski/SKAAN.out", 75, 100);
+        PositionResolver hohujoskany = new PositionResolver(client, "/Users/maciejmarczynski/SKAAN.out", 75, 100);
         Thread hohujo = new Thread(hohujoskany);
 
 
@@ -55,7 +52,7 @@ public class MainExecutor {
             hohujo.start();
             Thread.sleep(20);
 
-            for(VelocityVector velocityVector: tracks){
+            for(VelocityVector velocityVector: velocityVectors){
                 WheelsVelocity wheelsVelocity = velocityVector.toWheelsVelocity();
 
                 for (int i = 0; i <1; i++) {

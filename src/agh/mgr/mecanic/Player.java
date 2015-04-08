@@ -1,15 +1,14 @@
-package agh.mgr.mecanic.misc.tools;
+package agh.mgr.mecanic;
 
 import agh.mgr.mecanic.data.SerializableScanHistory;
-import org.jblas.DoubleMatrix;
 import pl.edu.agh.amber.hokuyo.MapPoint;
 
 import java.util.List;
 
-public class Sandbox {
-    public static void main(String []args){
+public class Player {
 
-
+    public static void main (String []args){
         List<List<MapPoint>> history = SerializableScanHistory.loadScans("/Users/maciejmarczynski/SKAAN.out");
+        System.out.println(history);
     }
 }
