@@ -20,6 +20,8 @@ public class Positioner {
         List<Integer> edges = findEdges(scannedPoints);
         System.out.println(edges);
         List<List<MapPoint>> listOfWalls = extractWalls(scannedPoints, edges);
+        System.out.println("LISTA SCIAN");
+        System.out.println(listOfWalls);
 
         Map<String, List<Double>> wallNameToClosestsPoints = new HashMap<String, List<Double>>();
         wallNameToClosestsPoints.put("LEFT", new LinkedList<Double>(Arrays.asList(-90.0)));
@@ -39,8 +41,8 @@ public class Positioner {
                     return 0;
                 }
             });
-            System.out.println("Minimal distance");
-            System.out.println(wall.get(0));
+            // System.out.println("Minimal distance");
+            System.out.println(wall);
             closestsPointOfWalls.add(wall.get(0));
         }
         addClosestPointsToWalls(closestsPointOfWalls, wallNameToClosestsPoints);
@@ -69,7 +71,7 @@ public class Positioner {
             String wallName = wallNames[i];
             double lastAngle = wallNameToClosestsPoints.get(wallName).get(wallNameToClosestsPoints.size()-1);
             double scannedAngle = closestsPointOfWalls.get(wallIndex).getAngle();
-
+            System.out.print(wallName + " DISTANCE: " + closestsPointOfWalls.get(wallIndex).getDistance() + "ANGLE: " + scannedAngle);
             if(lastAngle - LAST_POINT_DELTA < scannedAngle && lastAngle + LAST_POINT_DELTA > scannedAngle){
                 wallNameToClosestsPoints.get(wallName).add(scannedAngle);
                 wallIndex++;
