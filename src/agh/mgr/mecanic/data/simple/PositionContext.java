@@ -1,5 +1,7 @@
 package agh.mgr.mecanic.data.simple;
 
+import pl.edu.agh.amber.location.LocationCurrent;
+
 public class PositionContext {
     private double lastXPosition;
     private double lastYPosition;
@@ -15,6 +17,22 @@ public class PositionContext {
 
     public PositionContext(){}
 
+    public PositionContext(LocationCurrent locationCurrent){
+        try {
+            this.lastXPosition = locationCurrent.getX();
+            this.lastYPosition = locationCurrent.getY();
+            this.lastAngle = Utils.normalizeAndToDegrees(locationCurrent.getAngle());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public PositionContext(double lastXPosition, double lastYPosition, double lastAngleInDegrees){
+        this.lastXPosition = lastXPosition;
+        this.lastYPosition = lastYPosition;
+        this.lastAngle = lastAngleInDegrees;
+    }
     public PositionContext(double lastXPosition, double lastYPosition, double lastAngle, double mapXinMm, double mapYinMm, double lastLFspeed, double lastRFspeed, double lastRBspeed, double lastLBspeed) {
         this.lastXPosition = lastXPosition;
         this.lastYPosition = lastYPosition;
