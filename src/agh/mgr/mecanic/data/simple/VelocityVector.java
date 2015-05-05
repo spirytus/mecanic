@@ -10,7 +10,7 @@ import static agh.mgr.mecanic.data.Properties.HALF_OF_HEIGHT;
 import static agh.mgr.mecanic.data.Properties.HALF_OF_WIDTH;
 import static agh.mgr.mecanic.data.Properties.WHEEL_RADIUS;
 
-public class VelocityVector {
+public class VelocityVector implements  IVector{
 
     private double vx;
     private double vy;

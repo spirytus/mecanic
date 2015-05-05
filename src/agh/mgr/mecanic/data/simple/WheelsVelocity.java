@@ -2,7 +2,7 @@ package agh.mgr.mecanic.data.simple;
 
 import pl.edu.agh.amber.roboclaw.RoboclawProxy;
 
-public class WheelsVelocity {
+public class WheelsVelocity implements IVector{
 
     private final double leftFront;
     private final double rightFront;
