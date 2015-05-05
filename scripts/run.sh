@@ -6,7 +6,6 @@ ARTIFACT=../out/artifacts/Mecanic_jar/Mecanic.jar
 RUN_SCRIPT=roborun.sh
 
 scp $ARTIFACT $USER@$HOST:
-scp $RUN_SCRIPT $USER@$HOST:
-ssh $USER@$HOST
+scp -C $RUN_SCRIPT $USER@$HOST:
 
-. RUN_SCRIPT
+ssh $USER@$HOST
