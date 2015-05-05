@@ -1,4 +1,4 @@
-package agh.mgr.mecanic.data;
+package agh.mgr.mecanic.misc.tools;
 
 import pl.edu.agh.amber.hokuyo.MapPoint;
 

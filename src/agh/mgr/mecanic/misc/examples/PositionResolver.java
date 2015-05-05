@@ -1,6 +1,6 @@
 package agh.mgr.mecanic.misc.examples;
 
-import agh.mgr.mecanic.data.SerializableScanHistory;
+import agh.mgr.mecanic.misc.tools.SerializableScanHistory;
 import pl.edu.agh.amber.common.AmberClient;
 import pl.edu.agh.amber.hokuyo.HokuyoProxy;
 import pl.edu.agh.amber.hokuyo.MapPoint;
