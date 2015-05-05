@@ -1,5 +1,7 @@
 package agh.mgr.mecanic.data.simple;
 
+import pl.edu.agh.amber.roboclaw.RoboclawProxy;
+
 public class WheelsVelocity {
 
     private final double leftFront;
@@ -32,5 +34,9 @@ public class WheelsVelocity {
 
     public String toString(){
         return "LF:" + leftFront + " RF:" + rightFront + " RB:" + rightBack + "LB:" + leftBack;
+    }
+
+    public void applyOnRobot(RoboclawProxy roboclawProxy){
+        Utils.applyOnRobot(roboclawProxy, this);
     }
 }

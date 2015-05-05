@@ -1,6 +1,10 @@
 package agh.mgr.mecanic.data.simple;
 
+import Jama.Matrix;
 import org.jblas.DoubleMatrix;
+import pl.edu.agh.amber.roboclaw.RoboclawProxy;
+
+import java.io.IOException;
 
 import static agh.mgr.mecanic.data.Properties.HALF_OF_HEIGHT;
 import static agh.mgr.mecanic.data.Properties.HALF_OF_WIDTH;
@@ -31,19 +35,26 @@ public class VelocityVector {
     }
 
     public WheelsVelocity toWheelsVelocity(){
-        DoubleMatrix matrix4x3 = new DoubleMatrix(new double[][]{
+        Matrix matrix4x3 = new Matrix(new double[][]{
                 {1.0, 1.0, -(HALF_OF_HEIGHT + HALF_OF_WIDTH)},
                 {1.0 , -1.0, HALF_OF_HEIGHT + HALF_OF_WIDTH},
                 {1.0, -1.0, -(HALF_OF_HEIGHT + HALF_OF_WIDTH)},
                 {1.0, 1.0, HALF_OF_HEIGHT + HALF_OF_WIDTH}
         });
-        DoubleMatrix matrix3x1 = new DoubleMatrix(new double[][]{
+        Matrix matrix3x1 = new Matrix(new double[][]{
                 {this.getVx()},
                 {this.getVy()},
                 {this.getWt()}
         });
-        DoubleMatrix result = matrix4x3.mmul(matrix3x1).mmul(1/ WHEEL_RADIUS);
-        return new WheelsVelocity(result.get(0), result.get(1), result.get(2), result.get(3));
+        Matrix result = matrix4x3.times(matrix3x1).times(1 / WHEEL_RADIUS);
+        return new WheelsVelocity(result.get(0,0), result.get(1,0), result.get(2,0), result.get(3,0));
+    }
+
+    public void applyOnRobot(RoboclawProxy roboclawProxy){
+        WheelsVelocity wheelsVelocity = this.toWheelsVelocity();
+        Utils.applyOnRobot(roboclawProxy, wheelsVelocity);
+
+
     }
 
 }
