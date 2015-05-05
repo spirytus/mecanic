@@ -1,5 +1,6 @@
 package agh.mgr.mecanic;
 
+import agh.mgr.mecanic.data.simple.IVector;
 import agh.mgr.mecanic.data.simple.VelocityVector;
 import agh.mgr.mecanic.data.simple.WheelsVelocity;
 import agh.mgr.mecanic.data.tracks.SimpleTrack;
@@ -29,45 +30,20 @@ public class MainExecutor {
 
         SimpleTrack track = new SimpleTrack();
 
-        VelocityVector[] velocityVectors = track.getTrack();
+        IVector[] velocityVectors = track.getTrack();
         int interval = track.getInterval();
-
-        final String filename =  file;
-        final int res = resolution;
-        final int duration = duration_of_show/res;
-
-        SpeedLoggerAThread speedLogger = new SpeedLoggerAThread(res, roboclawProxy, duration, filename);
-        Thread speedLoggerThread = new Thread(speedLogger);
-
-        PositionResolver hohujoskany = new PositionResolver(client, "/Users/maciejmarczynski/SKAAN.out", 75, 100);
-        Thread hohujo = new Thread(hohujoskany);
-
-
-        // JAZDA
-
+        int commandIntervalInMs= 100;
 
         try {
-            //speedLoggerThread.start();
-            Thread.sleep(20);
-            hohujo.start();
-            Thread.sleep(20);
-
-            for(VelocityVector velocityVector: velocityVectors){
-                WheelsVelocity wheelsVelocity = velocityVector.toWheelsVelocity();
-
-                for (int i = 0; i <1; i++) {
-                    roboclawProxy.sendMotorsCommand(
-                            (int) wheelsVelocity.getLeftFront(),
-                            (int) wheelsVelocity.getRightFront(),
-                            (int) wheelsVelocity.getLeftBack(),
-                            (int) wheelsVelocity.getRightBack());
-                    Thread.sleep(1500);
-
+            int noOfCommandsToSend = interval / commandIntervalInMs;
+            for(IVector iVector: velocityVectors){
+                for(int i=0;i<noOfCommandsToSend; i++){
+                    iVector.applyOnRobot(roboclawProxy);
+                    Thread.sleep(commandIntervalInMs);
                 }
+                roboclawProxy.sendMotorsCommand(0,0,0,0);
+                Thread.sleep(1000);
             }
-            roboclawProxy.sendMotorsCommand(0,0,0,0);
-            Thread.sleep(5000);
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (IOException e) {

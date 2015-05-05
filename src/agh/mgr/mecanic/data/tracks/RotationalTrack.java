@@ -11,10 +11,7 @@ import agh.mgr.mecanic.data.simple.VelocityVector;
 //     track.1.speed.2.=12,13,18
 //     .... and select track on beginning of TrackExecutor.
 
-public class RotationalTrack {
-
-    private int interval;
-    private VelocityVector[] track;
+public class RotationalTrack extends BaseTrack{
 
     public RotationalTrack(){
         this.interval = 10000;
@@ -26,13 +23,5 @@ public class RotationalTrack {
                 new VelocityVector(0, 0, Properties.BASE_WZ),
                 new VelocityVector(0, 0, -Properties.BASE_WZ)
         };
-    }
-
-    public VelocityVector[] getTrack() {
-        return track;
-    }
-
-    public int getInterval() {
-        return interval;
     }
 }
