@@ -1,8 +1,10 @@
 package agh.mgr.mecanic.misc.tools;
 
+import org.jfree.ui.RefineryUtilities;
 import pl.edu.agh.amber.common.AmberClient;
 import pl.edu.agh.amber.hokuyo.HokuyoProxy;
 import pl.edu.agh.amber.hokuyo.MapPoint;
+import pl.edu.agh.amber.hokuyo.Scan;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +27,7 @@ public class ScanRecorder {
         AmberClient client;
         HokuyoProxy hokuyoProxy;
         try {
+            //TODO: Cos nie bangla !!
             client = new AmberClient(hostname, 26233);
             hokuyoProxy = new HokuyoProxy(client, 0);
             System.out.println("Podaj nazwe pliku wyjsciowego:");
@@ -35,9 +38,10 @@ public class ScanRecorder {
 
             while(!"x".equals(line)){
                 if("a".equals(line)){
-                    List<MapPoint> points = hokuyoProxy.getSingleScan().getPoints();
-                    System.out.println(points);
-                    System.out.println("Were added");
+                    pl.edu.agh.amber.hokuyo.Scan singleScan = hokuyoProxy.getSingleScan();
+                    singleScan.waitAvailable();
+                    List<MapPoint> points = singleScan.getPoints();
+                    //createVisualization("ODCZYT", points);
                     serializableScanHistory.add(points);
                 }
                 line = keyboard.nextLine();
@@ -52,5 +56,12 @@ public class ScanRecorder {
         }
 
 
+    }
+
+    private void createVisualization(String title, List<MapPoint> mapPoints){
+        final Visualizer demo = new Visualizer(title, mapPoints);
+        demo.pack();
+        RefineryUtilities.centerFrameOnScreen(demo);
+        demo.setVisible(true);
     }
 }
