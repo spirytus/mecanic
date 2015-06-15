@@ -1,5 +1,6 @@
 package agh.mgr.mecanic;
 
+import org.apache.commons.math3.stat.StatUtils;
 import pl.edu.agh.amber.hokuyo.MapPoint;
 
 import java.util.*;
@@ -12,15 +13,14 @@ import java.util.*;
 // This will give you better accuracy (hopefully)
 
 public class Positioner {
-    public static final Integer LAST_POINT_DELTA = 5; // Difference from last measured point of wall
+    public static final Integer LAST_POINT_DELTA = 5; // Difference from last measured point of wall. Odszumianie
 
-    public  static void execute(List<MapPoint> scannedPoints /*plik do logowania*/){
-        //List<MapPoint> scannedPoints = getScannedPoints();
-        System.out.println(scannedPoints);
-        List<Integer> edges = findEdges(scannedPoints);
+    public static void execute(List<MapPoint> scannedPoints){
+        List<List<Integer>> edges = findEdges(scannedPoints);
+        System.out.println("ROGI");
         System.out.println(edges);
         List<List<MapPoint>> listOfWalls = extractWalls(scannedPoints, edges);
-        System.out.println("LISTA SCIAN");
+        //System.out.println("LISTA SCIAN");
         System.out.println(listOfWalls);
 
         Map<String, List<Double>> wallNameToClosestsPoints = new HashMap<String, List<Double>>();
@@ -42,13 +42,13 @@ public class Positioner {
                 }
             });
             // System.out.println("Minimal distance");
-            System.out.println(wall);
+            //System.out.println(wall);
             closestsPointOfWalls.add(wall.get(0));
         }
         addClosestPointsToWalls(closestsPointOfWalls, wallNameToClosestsPoints);
-        System.out.println(listOfWalls);
+      //  System.out.println(listOfWalls);
 
-        System.out.println(scannedPointsToCoordinates(scannedPoints));
+        //System.out.println(scannedPointsToCoordinates(scannedPoints));
     }
 
     private static void addClosestPointsToWalls(List<MapPoint> closestsPointOfWalls, Map<String, List<Double>> wallNameToClosestsPoints) {
@@ -94,14 +94,15 @@ public class Positioner {
         return points;
     }
 
-    public static List<List<MapPoint>> extractWalls(List<MapPoint> scannedPoints, List<Integer> edgeIndices){
+    public static List<List<MapPoint>> extractWalls(List<MapPoint> scannedPoints, List<List<Integer>> allEdgeIndices){
         List<List<MapPoint>> listOfWalls = new LinkedList<List<MapPoint>>();
         int beginOfWall = 0;
-        for(int edgeIndex : edgeIndices){
-            listOfWalls.add(scannedPoints.subList(beginOfWall + 1, edgeIndex - 1));
-            beginOfWall=edgeIndex;
+        for(List<Integer> edgeIndex : allEdgeIndices){
+            listOfWalls.add(scannedPoints.subList(beginOfWall + 1, edgeIndex.get(0) - 1));
+            beginOfWall=edgeIndex.get(edgeIndex.size()-1);
         }
-        listOfWalls.add(scannedPoints.subList(beginOfWall+1, scannedPoints.size()-1));
+        List<Integer> lastEdge = allEdgeIndices.get(allEdgeIndices.size()-1);
+        listOfWalls.add(scannedPoints.subList(lastEdge.get(lastEdge.size()-1), scannedPoints.size()-1));
         return listOfWalls;
     }
 
@@ -131,18 +132,124 @@ public class Positioner {
     }
 
     // Returns list of possible edged. IMPORTANT : BEST TO REMOVE NEIGHBOURHOODS TOO.
-    public static List<Integer> findEdges(List<MapPoint> scannedPoints){
-        List<Integer> possibleEdges = new LinkedList<Integer>();
+    public static List<List<Integer>> findEdges(List<MapPoint> scannedPoints){
+        // WINDOWS SIZE - ilosc sasiadow z prawej i lewej, dla ktorych liczymy roznice miedzy ich odległosciami
+        int WINDOW_SIZE = 20; // srednio 2 skany na stopien - czyli 10 stopni
+
+    List<Integer> possibleEdges = new LinkedList<Integer>();
         int size = scannedPoints.size();
-        boolean isIncreasing = scannedPoints.get(0).getDistance() > scannedPoints.get(1).getDistance();
 
-        for(int i=1; i<size-1; i++){
-            if(isIncreasing && scannedPoints.get(i).getDistance() > scannedPoints.get(i+1).getDistance()){
-                possibleEdges.add(i);
-            }
-            isIncreasing = scannedPoints.get(i).getDistance() < scannedPoints.get(i+1).getDistance();
+        double[] scanDistances = getScanDistances(scannedPoints);
+
+        // [0,0,0,dist1,dist2,dist3,...]
+        List<Double> sumTenNeighbours = initSumOfNeighboursDistances(WINDOW_SIZE);
+        Map<Integer, Double> indexToDifference = new LinkedHashMap<Integer, Double>();
+
+        for(int i=WINDOW_SIZE;i<(scannedPoints.size()-WINDOW_SIZE);i++){
+            double sumOfLeftNeighbourDifferences = lewo(Arrays.copyOfRange(scanDistances, i - WINDOW_SIZE, i));
+            double sumOfRightNeighbourDifferences = prawo(Arrays.copyOfRange(scanDistances, i, i + WINDOW_SIZE));
+
+            sumTenNeighbours.add(sumOfLeftNeighbourDifferences + sumOfRightNeighbourDifferences);
         }
-        return possibleEdges;
 
+
+        for (int i=0;i<sumTenNeighbours.size();i++) {
+            indexToDifference.put(i,sumTenNeighbours.get(i));
+        }
+
+        //TU JEST ZLE !!
+        Map<Integer,Double> filteredIndexToDifferenceMap = new LinkedHashMap<Integer, Double>();
+
+        for (Map.Entry<Integer, Double> integerDoubleEntry : indexToDifference.entrySet()) {
+            if(integerDoubleEntry.getValue()>50){
+                filteredIndexToDifferenceMap.put(integerDoubleEntry.getKey(), integerDoubleEntry.getValue());
+            }
+        }
+
+        LinkedList<Integer> integers = new LinkedList<Integer>(filteredIndexToDifferenceMap.keySet());
+        Collections.sort(integers);
+
+        // Jesli tu odpowiednie density, to mozna usunac ten zakres
+        List<List<Integer>> listOfEdges = detectEdgesFromIndexes(integers, scannedPoints);
+
+        return listOfEdges;
+
+    }
+
+    private static List<Double> initSumOfNeighboursDistances(int WINDOW_SIZE) {
+        List<Double> sumTenNeighbours = new LinkedList<Double>();
+
+        for(int i=0;i<WINDOW_SIZE;i++){
+            sumTenNeighbours.add(0.0);
+        }
+        return sumTenNeighbours;
+    }
+
+    private static double[] getScanDistances(List<MapPoint> scannedPoints) {
+        double[] valuez = new double[scannedPoints.size()];
+        for (int i=0; i<scannedPoints.size(); i++) {
+            valuez[i] = scannedPoints.get(i).getDistance();
+        }
+        return valuez;
+    }
+
+    private static List<List<Integer>> detectEdgesFromIndexes(LinkedList<Integer> integers, List<MapPoint> scannedPoints) {
+        int previous = integers.get(0);
+        int current;
+        int DIFF = 5; // TODO: Configurable - dległośc miedzy indeksami punktów podejrzewanych o bycie krawedzia
+        int MIN_EDGE_LEN = 7; // TODO: Configurable - minimalna ilość odczytó∑ do uznania czegoś za krawędź
+
+        boolean isEdgeInProgress = false;
+        int noOfPointsInCorner = 0;
+
+        List<List<Integer>> cornerIndexesList = new LinkedList<List<Integer>>();
+        List<Integer> potentialCorner = null;
+
+        for (int i=1; i<integers.size(); i++) {
+            if(!isEdgeInProgress){
+                potentialCorner = new LinkedList<Integer>();
+                potentialCorner.add(previous);
+                noOfPointsInCorner++;
+                isEdgeInProgress = true;
+            }
+
+            current = integers.get(i);
+
+            if ((current - previous) < DIFF) {
+                potentialCorner.add(current);
+
+                noOfPointsInCorner++;
+            }
+            else{
+                if(noOfPointsInCorner >= MIN_EDGE_LEN){
+                    cornerIndexesList.add(potentialCorner);
+                }
+                noOfPointsInCorner = 0;
+                isEdgeInProgress = false;
+                potentialCorner = null;
+            }
+            previous = current;
+            if(i == (integers.size()-1) && potentialCorner != null){
+                cornerIndexesList.add(potentialCorner);
+            }
+        }
+        System.out.println("WYKRYTE ROGI" + cornerIndexesList);
+
+    return cornerIndexesList;
+    }
+
+    public static double lewo(double[] array){
+        double sum = 0.0;
+        for(int i=1;i<array.length;i++){
+            sum+=array[i]-array[i-1];
+        }
+        return sum;
+    }
+    public static double prawo(double[] array){
+        double sum = 0.0;
+        for(int i=1;i<array.length;i++){
+            sum+=array[i-1]-array[i];
+        }
+        return sum;
     }
 }
