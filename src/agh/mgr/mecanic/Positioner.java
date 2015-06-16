@@ -19,7 +19,13 @@ public class Positioner {
         List<List<Integer>> edges = findEdges(scannedPoints);
         System.out.println("ROGI");
         System.out.println(edges);
-        List<List<MapPoint>> listOfWalls = extractWalls(scannedPoints, edges);
+        List<List<MapPoint>> listOfWalls = null;
+        try {
+            listOfWalls = extractWalls(scannedPoints, edges);
+        } catch (OMGNoEdgesDetectedException e) {
+            e.printStackTrace();
+            return;
+        }
         //System.out.println("LISTA SCIAN");
         System.out.println(listOfWalls);
 
@@ -94,14 +100,19 @@ public class Positioner {
         return points;
     }
 
-    public static List<List<MapPoint>> extractWalls(List<MapPoint> scannedPoints, List<List<Integer>> allEdgeIndices){
+    public static List<List<MapPoint>> extractWalls(List<MapPoint> scannedPoints, List<List<Integer>> allEdges) throws OMGNoEdgesDetectedException {
+        if(allEdges == null){
+            throw new OMGNoEdgesDetectedException();
+        }
+
         List<List<MapPoint>> listOfWalls = new LinkedList<List<MapPoint>>();
         int beginOfWall = 0;
-        for(List<Integer> edgeIndex : allEdgeIndices){
-            listOfWalls.add(scannedPoints.subList(beginOfWall + 1, edgeIndex.get(0) - 1));
-            beginOfWall=edgeIndex.get(edgeIndex.size()-1);
+
+        for(List<Integer> edge : allEdges){
+            listOfWalls.add(scannedPoints.subList(beginOfWall, edge.get(0) - 1));
+            beginOfWall=edge.get(edge.size()-1);
         }
-        List<Integer> lastEdge = allEdgeIndices.get(allEdgeIndices.size()-1);
+        List<Integer> lastEdge = allEdges.get(allEdges.size()-1);
         listOfWalls.add(scannedPoints.subList(lastEdge.get(lastEdge.size()-1), scannedPoints.size()-1));
         return listOfWalls;
     }
