@@ -1,6 +1,9 @@
 package agh.mgr.mecanic;
 
-import org.apache.commons.math3.stat.StatUtils;
+import agh.mgr.mecanic.misc.tools.SerializableScanHistory;
+import agh.mgr.mecanic.misc.tools.Visualizer;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.jfree.ui.RefineryUtilities;
 import pl.edu.agh.amber.hokuyo.MapPoint;
 
 import java.util.*;
@@ -14,6 +17,8 @@ import java.util.*;
 
 public class Positioner {
     public static final Integer LAST_POINT_DELTA = 5; // Difference from last measured point of wall. Odszumianie
+
+
 
     public static void execute(List<MapPoint> scannedPoints){
         List<List<Integer>> edges = findEdges(scannedPoints);
@@ -248,7 +253,48 @@ public class Positioner {
 
     return cornerIndexesList;
     }
+    public static void printDistancesToWall(List<MapPoint> mapPoints, List<List<Integer>> edges) {
+        try {
+            List<List<MapPoint>> walls = Positioner.extractWalls(mapPoints, edges);
+            int i = 0;
+            for (List<MapPoint> wall : walls) {
 
+                SimpleRegression wallRegression = getWallRegression(wall);
+
+                double a = wallRegression.getSlope();
+                double b = wallRegression.getIntercept();
+
+                double A = -a;
+                double B = 1;
+                double C = -b;
+
+                double distance = Math.abs(C)/Math.sqrt(A*A+B*B);
+                System.out.println("y = " + a +"x + "+ b);
+                System.out.println("DISTANCE " + distance);
+
+            }
+            System.out.println("-------------");
+
+
+        } catch (OMGNoEdgesDetectedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static SimpleRegression getWallRegression(List<MapPoint> wall) {
+        SimpleRegression simpleRegression = new SimpleRegression(true);
+
+        for (MapPoint mapPoint : wall) {
+            double x = mapPoint.getDistance() * Math.sin(Math.toRadians(mapPoint.getAngle()));
+            double y = mapPoint.getDistance() * Math.cos(Math.toRadians(mapPoint.getAngle()));
+
+            simpleRegression.addData(x, y);
+        }
+
+        return simpleRegression;
+//        double a = simpleRegression.getSlope();
+//        double b = simpleRegression.getIntercept();
+    }
     public static double lewo(double[] array){
         double sum = 0.0;
         for(int i=1;i<array.length;i++){
@@ -263,4 +309,5 @@ public class Positioner {
         }
         return sum;
     }
+
 }
