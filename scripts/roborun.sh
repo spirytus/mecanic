@@ -2,4 +2,4 @@
 
 ARTIFACT_NAME=Mecanic.jar
 
-java -cp $ARTIFACT_NAME agh.mgr.mecanic.LocationExample
+java -cp $ARTIFACT_NAME agh.mgr.mecanic.MainExecutor
