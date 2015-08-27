@@ -22,9 +22,12 @@ public class PoseTrackIterator {
             currentElement -= poseTrackSize;
             return this.poseTrack.getPoseTrack().get(currentElement);
         }
-        
+
         return this.poseTrack.getPoseTrack().get(0);
 
+    }
 
+    public Pose getCurrent(){
+        return this.poseTrack.getPoseTrack().get(this.currentElement);
     }
 }
