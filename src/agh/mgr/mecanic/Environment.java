@@ -1,6 +1,6 @@
 package agh.mgr.mecanic;
 
-public class RobotMap {
+public class Environment {
 
     private double width;
     private double height;
@@ -20,4 +20,5 @@ public class RobotMap {
     public void setHeight(double height) {
         this.height = height;
     }
+
 }
