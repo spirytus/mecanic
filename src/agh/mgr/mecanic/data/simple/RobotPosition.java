@@ -2,7 +2,7 @@ package agh.mgr.mecanic.data.simple;
 
 import pl.edu.agh.amber.location.LocationCurrent;
 
-public class PositionContext {
+public class RobotPosition {
     private double lastXPosition;
     private double lastYPosition;
     private double lastAngle;
@@ -15,9 +15,9 @@ public class PositionContext {
     private double lastRBspeed;
     private double lastLBspeed;
 
-    public PositionContext(){}
+    public RobotPosition(){}
 
-    public PositionContext(LocationCurrent locationCurrent){
+    public RobotPosition(LocationCurrent locationCurrent){
         try {
             this.lastXPosition = locationCurrent.getX();
             this.lastYPosition = locationCurrent.getY();
@@ -28,12 +28,12 @@ public class PositionContext {
 
     }
 
-    public PositionContext(double lastXPosition, double lastYPosition, double lastAngleInDegrees){
+    public RobotPosition(double lastXPosition, double lastYPosition, double lastAngleInDegrees){
         this.lastXPosition = lastXPosition;
         this.lastYPosition = lastYPosition;
         this.lastAngle = lastAngleInDegrees;
     }
-    public PositionContext(double lastXPosition, double lastYPosition, double lastAngle, double mapXinMm, double mapYinMm, double lastLFspeed, double lastRFspeed, double lastRBspeed, double lastLBspeed) {
+    public RobotPosition(double lastXPosition, double lastYPosition, double lastAngle, double mapXinMm, double mapYinMm, double lastLFspeed, double lastRFspeed, double lastRBspeed, double lastLBspeed) {
         this.lastXPosition = lastXPosition;
         this.lastYPosition = lastYPosition;
         this.lastAngle = lastAngle;

@@ -7,7 +7,7 @@ import agh.mgr.mecanic.data.simple.WheelsVelocity;
 
 public class PaperTrack extends BaseTrack {
     public PaperTrack(){
-        this.interval = 1500;
+        this.interval = 5000;
 
         double BASE_VY=5000.0;
         double BASE_WZ=7.0;
@@ -29,16 +29,7 @@ public class PaperTrack extends BaseTrack {
 //                new VelocityVector(0, -BASE_VY, -BASE_WZ),
 //        };
         IVector[] a = new VelocityVector[]{
-                new VelocityVector(0, -BASE_VY,  -BASE_WZ),
-                new VelocityVector(0, -BASE_VY, BASE_WZ),
-                new VelocityVector(0, -BASE_VY,  -BASE_WZ),
-                new VelocityVector(0, -BASE_VY, BASE_WZ),
-                new VelocityVector(0, -BASE_VY,  -BASE_WZ),
-                new VelocityVector(0, -BASE_VY, BASE_WZ),
-                new VelocityVector(0, -BASE_VY,  -BASE_WZ),
-                new VelocityVector(0, -BASE_VY, BASE_WZ),
-                new VelocityVector(0, -BASE_VY,  -BASE_WZ),
-                new VelocityVector(0, -BASE_VY, BASE_WZ),
+                new VelocityVector(-600, -BASE_VY,  2)
         };
 
         this.track = a;

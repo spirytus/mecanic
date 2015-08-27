@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 public class TrackExecutor {
-    public static void execute(BaseTrack track, int commandResolution){
+    public static void execute(BaseTrack track, int commandResolution) {
 
         AmberClient client;
         try {
@@ -29,25 +29,25 @@ public class TrackExecutor {
         final HokuyoProxy hokuyoProxy = new HokuyoProxy(client, 0);
 
         Thread hokuyoThread = null;
-            hokuyoThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        while(true){
-                            Scan singleScan = hokuyoProxy.getSingleScan();
+        hokuyoThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        Scan singleScan = hokuyoProxy.getSingleScan();
 
-                            List<MapPoint> mapPoints = singleScan.getPoints();
-                            List<List<Integer>> edges = Positioner.findEdges(mapPoints);
-                            Positioner.printDistancesToWall(mapPoints, edges);
+                        List<MapPoint> mapPoints = singleScan.getPoints();
+                        List<List<Integer>> edges = Positioner.findEdges(mapPoints);
+                        Positioner.printDistancesToWall(mapPoints, edges);
 
-                        }
-                        } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            });
+            }
+        });
 
         hokuyoThread.start();
 
@@ -56,12 +56,12 @@ public class TrackExecutor {
 
         try {
             int noOfCommandsToSend = interval / commandResolution;
-            for(IVector iVector: velocityVectors){
-                for(int i=0;i<noOfCommandsToSend; i++){
+            for (IVector iVector : velocityVectors) {
+                for (int i = 0; i < noOfCommandsToSend; i++) {
                     iVector.applyOnRobot(roboclawProxy);
                     Thread.sleep(commandResolution);
                 }
-                roboclawProxy.sendMotorsCommand(0,0,0,0);
+                roboclawProxy.sendMotorsCommand(0, 0, 0, 0);
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
@@ -71,6 +71,6 @@ public class TrackExecutor {
         } finally {
             client.terminate();
         }
-        
+
     }
 }

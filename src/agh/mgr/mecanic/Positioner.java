@@ -6,6 +6,7 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.jfree.ui.RefineryUtilities;
 import pl.edu.agh.amber.hokuyo.MapPoint;
 
+import java.io.PrintStream;
 import java.util.*;
 // TODO: REVIEW
 
@@ -249,28 +250,48 @@ public class Positioner {
                 cornerIndexesList.add(potentialCorner);
             }
         }
-        System.out.println("WYKRYTE ROGI" + cornerIndexesList);
+//        System.out.println("WYKRYTE ROGI" + cornerIndexesList);
 
     return cornerIndexesList;
     }
+
+    public static int SZEROKOSC_MAPY =  2280;
+    public static int DLUGOSC_MAPY =    2840;
+
     public static void printDistancesToWall(List<MapPoint> mapPoints, List<List<Integer>> edges) {
         try {
             List<List<MapPoint>> walls = Positioner.extractWalls(mapPoints, edges);
-            int i = 0;
+            //System.out.println("ILOSC WYKRYTYCH SCIAN " + walls.size());
+            int i = -1;
+
+
             for (List<MapPoint> wall : walls) {
+                i++;
+                boolean FRONT_WALL = false;
+                for (MapPoint point : wall) {
+                    if(point.getAngle()<0.5 && point.getAngle() >-0.5){
+                        FRONT_WALL = true;
+                    }
+                }
+                if(FRONT_WALL){
+                    if(walls.size() > 3){
+                        System.out.println("WINCY NIZ 3 SCIANY");
+                    }
+                    List<MapPoint> leftWall = walls.get(i-1);
+                    double leftWallDistance = getDistanceToWall(leftWall);
 
-                SimpleRegression wallRegression = getWallRegression(wall);
+                    List<MapPoint> headWall = walls.get(i);
+                    double headWallDistance = getDistanceToWall(headWall);
 
-                double a = wallRegression.getSlope();
-                double b = wallRegression.getIntercept();
+                    List<MapPoint> rightWall = walls.get(i+1);
+                    double rightWallDistance = getDistanceToWall(rightWall);
 
-                double A = -a;
-                double B = 1;
-                double C = -b;
-
-                double distance = Math.abs(C)/Math.sqrt(A*A+B*B);
-                System.out.println("y = " + a +"x + "+ b);
-                System.out.println("DISTANCE " + distance);
+                    double x = SZEROKOSC_MAPY - headWallDistance;
+                    double y = DLUGOSC_MAPY - leftWallDistance;
+                    System.out.println("===========================");
+                    System.out.printf("POZYCJA: x: %f y: %f %n", x, y);
+                    System.out.println("===========================");
+                }
 
             }
             System.out.println("-------------");
@@ -280,6 +301,41 @@ public class Positioner {
             e.printStackTrace();
         }
     }
+
+    public static double getDistanceToWall(List<MapPoint> wall) {
+        SimpleRegression wallRegression = getWallRegression(wall);
+
+        double a = wallRegression.getSlope();
+        double b = wallRegression.getIntercept();
+
+        double A = -a;
+        double B = 1;
+        double C = -b;
+
+        double distance = Math.abs(C)/Math.sqrt(A*A+B*B);
+        double perpendicularLineToWallAngle = Math.toDegrees(Math.atan(-1 / a)); // aka alfa. Or Math
+
+
+        //perpendicular line is y=mx + n
+        double m = -1/a;
+        double commonPointX = b/(m-a);
+
+        double slopeOrientationInAngle;
+        if(commonPointX<0){
+            slopeOrientationInAngle = 180 - perpendicularLineToWallAngle;
+        }
+        else {
+            slopeOrientationInAngle = -90 -perpendicularLineToWallAngle;
+        }
+
+
+        System.out.println("y = " + a +"x + "+ b);
+        System.out.println("DISTANCE " + distance);
+
+        return distance;
+
+    }
+
 
     public static SimpleRegression getWallRegression(List<MapPoint> wall) {
         SimpleRegression simpleRegression = new SimpleRegression(true);

@@ -46,16 +46,14 @@ public class ScanRecorder {
                 }
                 line = keyboard.nextLine();
             }
+            System.out.println("Zakonczono pobieranie skanow, zapisujemy.");
             SerializableScanHistory.dumpScans(serializableScanHistory, filename);
-
+            System.out.println("Zapisano");
         } catch (IOException e) {
             System.out.println("Unable to connect to robot: " + e);
-            return;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     private void createVisualization(String title, List<MapPoint> mapPoints){

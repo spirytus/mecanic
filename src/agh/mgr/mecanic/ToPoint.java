@@ -1,6 +1,6 @@
 package agh.mgr.mecanic;
 
-import agh.mgr.mecanic.data.simple.PositionContext;
+import agh.mgr.mecanic.data.simple.RobotPosition;
 import agh.mgr.mecanic.data.simple.Utils;
 import agh.mgr.mecanic.data.simple.VelocityVector;
 import pl.edu.agh.amber.hokuyo.HokuyoProxy;
@@ -22,7 +22,7 @@ public class ToPoint {
 
 
     }
-    public static void rotateFirst(PositionContext locationCurrent, PositionContext locationDesired, RoboclawProxy roboclawProxy, LocationProxy locationProxy, HokuyoProxy hokuyoProxy){
+    public static void rotateFirst(RobotPosition locationCurrent, RobotPosition locationDesired, RoboclawProxy roboclawProxy, LocationProxy locationProxy, HokuyoProxy hokuyoProxy){
         //RoboclawProxy speed
         //LocationProxy
         //1. sprawdz roznice w stopniach i niech się zacznie kręcić
@@ -50,7 +50,7 @@ public class ToPoint {
 
 
         try {
-            PositionContext currentLocation = new PositionContext(locationProxy.getCurrentLocation());
+            RobotPosition currentLocation = new RobotPosition(locationProxy.getCurrentLocation());
             System.out.println("Desired angle :" + locationDesired.getLastAngle());
             LocationCurrent locationCurrent1 = null;
             while(Math.abs(currentLocation.getLastAngle() - locationDesired.getLastAngle()) > delta){
@@ -63,7 +63,7 @@ public class ToPoint {
                     if("a".equals(input)){
                         locationCurrent1 = locationProxy.getCurrentLocation();
                         locationCurrent1.waitAvailable();
-                        currentLocation = new PositionContext(locationCurrent1);
+                        currentLocation = new RobotPosition(locationCurrent1);
 
                         System.out.println(String.format("Current location: X: %s, Y: %s, Alfa: %s, Degree: %s, P: %s, TimeStamp: %s",
                                 locationCurrent1.getX(), locationCurrent1.getY(), locationCurrent1.getAngle(), Utils.normalizeAndToDegrees(locationCurrent1.getAngle()),
@@ -84,7 +84,7 @@ public class ToPoint {
 
                 locationCurrent1 = locationProxy.getCurrentLocation();
                 locationCurrent1.waitAvailable();
-                currentLocation = new PositionContext(locationCurrent1);
+                currentLocation = new RobotPosition(locationCurrent1);
 
                 System.out.println(String.format("Current location: X: %s, Y: %s, Alfa: %s, Degree: %s, P: %s, TimeStamp: %s",
                         locationCurrent1.getX(), locationCurrent1.getY(), locationCurrent1.getAngle(), Utils.normalizeAndToDegrees(locationCurrent1.getAngle()),

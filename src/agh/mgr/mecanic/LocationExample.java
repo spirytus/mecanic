@@ -1,6 +1,6 @@
 package agh.mgr.mecanic;
 
-import agh.mgr.mecanic.data.simple.PositionContext;
+import agh.mgr.mecanic.data.simple.RobotPosition;
 import agh.mgr.mecanic.data.simple.Utils;
 import pl.edu.agh.amber.common.AmberClient;
 import pl.edu.agh.amber.hokuyo.HokuyoProxy;
@@ -59,8 +59,8 @@ public class LocationExample {
                     lok.getX(), lok.getY(), lok.getAngle(), Utils.normalizeAndToDegrees(lok.getAngle()),
                     lok.getP(), lok.getTimeStamp()));
 
-            PositionContext current = new PositionContext();
-            PositionContext destination = new PositionContext(0.48, 3.0, 40.0);
+            RobotPosition current = new RobotPosition();
+            RobotPosition destination = new RobotPosition(0.48, 3.0, 40.0);
 
             ToPoint.rotateFirst(current, destination, roboclawProxy, locationProxy, hokuyoProxy);
         } catch (IOException e) {
