@@ -1,14 +1,16 @@
 package agh.mgr.mecanic;
 
 import agh.mgr.mecanic.data.simple.WheelsVelocity;
-import pl.edu.agh.amber.hokuyo.Scan;
+import pl.edu.agh.amber.hokuyo.MapPoint;
+
+import java.util.List;
 
 public class SharedState {
-    public static synchronized Scan getLastScan() {
+    public static synchronized List<MapPoint> getLastScan() {
         return lastScan;
     }
 
-    public static synchronized void setLastScan(Scan lastScan) {
+    public static synchronized void setLastScan(List<MapPoint> lastScan) {
         SharedState.lastScan = lastScan;
     }
 
@@ -20,7 +22,7 @@ public class SharedState {
         SharedState.currentWheelsVelocity = currentWheelsVelocity;
     }
 
-    public static Scan lastScan;
+    public static List<MapPoint> lastScan;
     public static WheelsVelocity currentWheelsVelocity;
 
 }

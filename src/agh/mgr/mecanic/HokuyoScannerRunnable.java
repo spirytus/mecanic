@@ -20,8 +20,10 @@ public class HokuyoScannerRunnable implements Runnable {
         try {
             while (true) {
                 Scan singleScan = hokuyoProxy.getSingleScan();
+
                 // Let's tag it at some point sSystem.currentTimeMillis();
-                SharedState.setLastScan(singleScan);
+
+                SharedState.setLastScan(singleScan.getPoints());
 
                 Thread.sleep(this.scanInterval);
 

@@ -83,7 +83,7 @@ public class Positioner {
             String wallName = wallNames[i];
             double lastAngle = wallNameToClosestsPoints.get(wallName).get(wallNameToClosestsPoints.size()-1);
             double scannedAngle = closestsPointOfWalls.get(wallIndex).getAngle();
-            System.out.print(wallName + " DISTANCE: " + closestsPointOfWalls.get(wallIndex).getDistance() + "ANGLE: " + scannedAngle);
+            //System.out.print(wallName + " DISTANCE: " + closestsPointOfWalls.get(wallIndex).getDistance() + "ANGLE: " + scannedAngle);
             if(lastAngle - LAST_POINT_DELTA < scannedAngle && lastAngle + LAST_POINT_DELTA > scannedAngle){
                 wallNameToClosestsPoints.get(wallName).add(scannedAngle);
                 wallIndex++;
@@ -149,6 +149,17 @@ public class Positioner {
     }
 
     // Returns list of possible edged. IMPORTANT : BEST TO REMOVE NEIGHBOURHOODS TOO.
+
+    /*
+       Function finds edges in scan.
+       Edge is when distance from robot + + + edge - - -
+
+       Algo:
+       Go through whole scan, calculate distance
+       Get scan points with max
+       remove edges and its neighbours
+     */
+
     public static List<List<Integer>> findEdges(List<MapPoint> scannedPoints){
         // WINDOWS SIZE - ilosc sasiadow z prawej i lewej, dla ktorych liczymy roznice miedzy ich odległosciami
         int WINDOW_SIZE = 20; // srednio 2 skany na stopien - czyli 10 stopni
@@ -178,6 +189,7 @@ public class Positioner {
         Map<Integer,Double> filteredIndexToDifferenceMap = new LinkedHashMap<Integer, Double>();
 
         for (Map.Entry<Integer, Double> integerDoubleEntry : indexToDifference.entrySet()) {
+            // TODO: Tu jest jakis magic number wg ktorego udcinamy punkty, ktore raczej nie sa scianami
             if(integerDoubleEntry.getValue()>50){
                 filteredIndexToDifferenceMap.put(integerDoubleEntry.getKey(), integerDoubleEntry.getValue());
             }
@@ -213,6 +225,9 @@ public class Positioner {
     private static List<List<Integer>> detectEdgesFromIndexes(LinkedList<Integer> integers, List<MapPoint> scannedPoints) {
         int previous = integers.get(0);
         int current;
+
+        //To jest jak filtr :
+        // [1, 2, 3, 11,12,13,14,15,16,17 ] - chocdzi o to zeby po wstepnym odfiltrowaniu i tak wybrac poprawne krawedzie
         int DIFF = 5; // TODO: Configurable - dległośc miedzy indeksami punktów podejrzewanych o bycie krawedzia
         int MIN_EDGE_LEN = 7; // TODO: Configurable - minimalna ilość odczytó∑ do uznania czegoś za krawędź
 
@@ -250,15 +265,11 @@ public class Positioner {
                 cornerIndexesList.add(potentialCorner);
             }
         }
-//        System.out.println("WYKRYTE ROGI" + cornerIndexesList);
 
     return cornerIndexesList;
     }
 
-    public static int SZEROKOSC_MAPY =  2280;
-    public static int DLUGOSC_MAPY =    2840;
-
-    public static void printDistancesToWall(List<MapPoint> mapPoints, List<List<Integer>> edges) {
+    public static Pose getCurrentPose(List<MapPoint> mapPoints, List<List<Integer>> edges, Environment environment) {
         try {
             List<List<MapPoint>> walls = Positioner.extractWalls(mapPoints, edges);
             //System.out.println("ILOSC WYKRYTYCH SCIAN " + walls.size());
@@ -269,28 +280,35 @@ public class Positioner {
                 i++;
                 boolean FRONT_WALL = false;
                 for (MapPoint point : wall) {
-                    if(point.getAngle()<0.5 && point.getAngle() >-0.5){
+                    // TODO: Configurable
+                    if(point.getAngle()<1.0 && point.getAngle() >-1.0){
                         FRONT_WALL = true;
                     }
                 }
                 if(FRONT_WALL){
                     if(walls.size() > 3){
-                        System.out.println("WINCY NIZ 3 SCIANY");
+//                        System.out.println("WINCY NIZ 3 SCIANY");
                     }
                     List<MapPoint> leftWall = walls.get(i-1);
                     double leftWallDistance = getDistanceToWall(leftWall);
 
                     List<MapPoint> headWall = walls.get(i);
+                    MapPoint closest = getClosestMapPoint(headWall);
                     double headWallDistance = getDistanceToWall(headWall);
 
                     List<MapPoint> rightWall = walls.get(i+1);
                     double rightWallDistance = getDistanceToWall(rightWall);
 
-                    double x = SZEROKOSC_MAPY - headWallDistance;
-                    double y = DLUGOSC_MAPY - leftWallDistance;
-                    System.out.println("===========================");
-                    System.out.printf("POZYCJA: x: %f y: %f %n", x, y);
-                    System.out.println("===========================");
+                    // TODO : Odejmowanie pewnie tez bedzie zalezalo od tego gdzie sie skieruje glowe.
+//                    double x = environment.getWidth()   - rightWallDistance;
+                    double x = leftWallDistance;
+                    double y = environment.getHeight() - headWallDistance;
+//                    System.out.println("===========================");
+//                    System.out.printf("POZYCJA: x: %f y: %f %n", x, y);
+//                    System.out.println("===========================");
+
+                    // TODO : Detekcja zmiany sciany !! (Na ktora pokazuje head). Npdst tego wyliczymy nachylenie ! if 1 to liczymy tak, if 2, to tak
+                    return new Pose(x,y, 90.0+closest.getAngle());
                 }
 
             }
@@ -300,8 +318,25 @@ public class Positioner {
         } catch (OMGNoEdgesDetectedException e) {
             e.printStackTrace();
         }
+
+        return new Pose(-1.0,-1.0);
     }
 
+    /* Wyciagamy najblizszy punkt pomiaru, zeby ogarnąć nachylenie */
+    public static MapPoint getClosestMapPoint(List<MapPoint> wall){
+        MapPoint closest = wall.get(0);
+        for (MapPoint mapPoint : wall) {
+            if(mapPoint.getDistance() < closest.getDistance()) {
+                closest=mapPoint;
+            }
+        }
+        return closest;
+    }
+    /*
+       Returns distance to wall based on
+       1. Calculate slope of wall (y=ax+b)
+       2. Calculate distance to this wall
+     */
     public static double getDistanceToWall(List<MapPoint> wall) {
         SimpleRegression wallRegression = getWallRegression(wall);
 
@@ -320,6 +355,7 @@ public class Positioner {
         double m = -1/a;
         double commonPointX = b/(m-a);
 
+        // TODO: WTF ??
         double slopeOrientationInAngle;
         if(commonPointX<0){
             slopeOrientationInAngle = 180 - perpendicularLineToWallAngle;
@@ -329,14 +365,16 @@ public class Positioner {
         }
 
 
-        System.out.println("y = " + a +"x + "+ b);
-        System.out.println("DISTANCE " + distance);
+//        System.out.println("y = " + a +"x + "+ b);
+//        System.out.println("DISTANCE " + distance);
 
         return distance;
 
     }
 
-
+    /*
+       Helper function for creating wall regression
+     */
     public static SimpleRegression getWallRegression(List<MapPoint> wall) {
         SimpleRegression simpleRegression = new SimpleRegression(true);
 
@@ -351,6 +389,7 @@ public class Positioner {
 //        double a = simpleRegression.getSlope();
 //        double b = simpleRegression.getIntercept();
     }
+
     public static double lewo(double[] array){
         double sum = 0.0;
         for(int i=1;i<array.length;i++){
@@ -358,6 +397,7 @@ public class Positioner {
         }
         return sum;
     }
+
     public static double prawo(double[] array){
         double sum = 0.0;
         for(int i=1;i<array.length;i++){

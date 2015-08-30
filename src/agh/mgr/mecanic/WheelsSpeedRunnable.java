@@ -19,8 +19,15 @@ public class WheelsSpeedRunnable implements Runnable {
         try {
                 while(true) {
                     WheelsVelocity currentWheelsVelocity = SharedState.getCurrentWheelsVelocity();
-                    Utils.applyOnRobot(this.roboclawProxy, currentWheelsVelocity);
+                    if(currentWheelsVelocity != null){
+                        System.out.println("USTAWIAM SPIDA" + currentWheelsVelocity);
+                        Utils.applyOnRobot(this.roboclawProxy, currentWheelsVelocity);
+                    }
+                    else {
+                        System.out.println("COS SIE WYSRALO, NIE MA JAKIEJ PREDKOSCI USTAWIC");
+                    }
                     Thread.sleep(this.intervalInMs);
+
                 }
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -4,7 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class PoseTrack {
-    public PoseTrack() {
+    private double gradient; // czyli nachylenie z jakim chcemy pokonywac trase
+
+    public PoseTrack(double gradient) {
+        this.gradient = gradient;
         this.poseTrack = new LinkedList<Pose>();
     }
 

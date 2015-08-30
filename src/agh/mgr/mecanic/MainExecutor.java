@@ -1,7 +1,8 @@
 package agh.mgr.mecanic;
 
-import agh.mgr.mecanic.data.simple.IVector;
-import agh.mgr.mecanic.data.tracks.PaperTrack;
+import agh.mgr.mecanic.data.simple.VelocityVector;
+import agh.mgr.mecanic.data.simple.WheelsVelocity;
+import org.apache.log4j.Logger;
 import pl.edu.agh.amber.common.AmberClient;
 import pl.edu.agh.amber.hokuyo.HokuyoProxy;
 import pl.edu.agh.amber.hokuyo.MapPoint;
@@ -12,16 +13,20 @@ import java.util.List;
 
 public class MainExecutor {
 
+    final static Logger logger = Logger.getLogger(MainExecutor.class);
+
     // Configurble parameters
-    public static double X_SCALE = 1.0;
-    public static double Y_SCALE = 1.0;
-    public static int SCAN_INTERVAL_IN_MS = 200;
-    public static int WHEELS_EXECUTION_IN_MS = 100;
-    public static int DECISION_MAKING_INTERVAL = 200;
+    public static double X_SCALE = 158.6;
+    public static double Y_SCALE = 228;
+    public static int SCAN_INTERVAL_IN_MS = 500;
+    public static int WHEELS_EXECUTION_IN_MS = 1000;
+    public static int DECISION_MAKING_INTERVAL = 400;
     public static String IP_OF_ROBOT = "192.168.2.209";
     public static int PORT_OF_ROBOT = 26233;
-    public static double ENV_WIDTH_IN_MM = 2500;
-    public static double ENV_HEIGHT_IN_MM = 200;
+    public static double ENV_WIDTH_IN_MM = 2360;
+    public static double ENV_HEIGHT_IN_MM = 2260;
+    public static double POSE_COMPARATOR_ERROR_ACCEPTED = 30.0;
+
     // EOF configurable parameters
 
     public static void main(String args[]) {
@@ -40,23 +45,32 @@ public class MainExecutor {
             wheelsSpeedExecutorThread.start();
             Environment environment = new Environment(ENV_WIDTH_IN_MM, ENV_HEIGHT_IN_MM, 1);
 
-            Thread.sleep(1000); // Niech się inne watki rozbujajo
+            Thread.sleep(2000); // Niech się inne watki rozbujajo
 
             //execution BEGINS =================
 
             boolean achieved = false;
 
+            PoseComparator poseComparator = new PoseComparator(POSE_COMPARATOR_ERROR_ACCEPTED);
+
+            List<MapPoint> scannedMapPoints = null;
+            List<List<Integer>> edges = null;
+            Pose currentRobotPose = null;
+            Pose expectedTrackPose = poseTrackIterator.getCurrent();
+
             while(true){
-                List<MapPoint> mapPoints = SharedState.getLastScan().getPoints();
-                List<List<Integer>> edges = Positioner.findEdges(mapPoints);
-                Positioner.printDistancesToWall(mapPoints, edges);
-
-                System.out.println("ODCZYTANO ZE SCIAN, ZASYPIAMY");
-                // TODO : 1 Get exact position
-                Pose current = poseTrackIterator.getCurrent();
-                // TODO : 2 Comparator Do pozycji
-                Thread.sleep(DECISION_MAKING_INTERVAL);
-
+                scannedMapPoints = SharedState.getLastScan();
+                edges = Positioner.findEdges(scannedMapPoints);
+                currentRobotPose =  Positioner.getCurrentPose(scannedMapPoints, edges, environment);
+                logger.debug("Current pose" + currentRobotPose);
+                logger.debug("Expected pose" + expectedTrackPose);
+                if(!poseComparator.compare(currentRobotPose, expectedTrackPose)){
+                    reconfigureSpeed(currentRobotPose, expectedTrackPose);
+                    Thread.sleep(DECISION_MAKING_INTERVAL);
+                }
+                else {
+                    expectedTrackPose = poseTrackIterator.getNext(); // tu nie ma na co czekac, trzeba od razu kierowac sie na kolejnego pose'a
+                }
             }
 // kolejne leftoversys    public static void execute(BaseTrack track, int commandResolution) {
 
@@ -71,10 +85,35 @@ public class MainExecutor {
             client.terminate();
         }
     }
+    private static void reconfigureSpeed(Pose currentRobotPose, Pose expectedTrackPose){
 
+        double dx = expectedTrackPose.getX() - currentRobotPose.getX();
+        double dy = expectedTrackPose.getY() - currentRobotPose.getY();
+        double dWt = expectedTrackPose.getAngle() - currentRobotPose.getAngle();
+
+        double ratio = dx/dy;
+
+        double BASE_SPEED = 650.0;
+
+        double Vx = BASE_SPEED * ratio;
+        double Vy = BASE_SPEED * 1/ratio;
+
+        double BASIC_ROTATE = 10.0;
+        //double ROTATE_MAGIC = 1.0;
+
+        double distanceToDestination = Math.sqrt(dx*dx+dy*dy);
+
+        double Wt = BASIC_ROTATE/distanceToDestination*dWt;
+
+        System.out.printf("Setting vx %f vy %f dt %f", dx, dy, dWt);
+        VelocityVector velocityVector = new VelocityVector(Vx, Vy, Wt);
+        SharedState.setCurrentWheelsVelocity(velocityVector.toWheelsVelocity());
+        
+    }
     private static PoseTrackIterator initPoseTrack() {
 
-        PoseTrack poseTrack = new PoseTrack();
+        double gradient = 90.0;
+        PoseTrack poseTrack = new PoseTrack(gradient);
         poseTrack.addPose(new Pose(2.0*X_SCALE, 5.0*Y_SCALE));
         poseTrack.addPose(new Pose(2.5*X_SCALE, 6.0*Y_SCALE));
         poseTrack.addPose(new Pose(3.0*X_SCALE, 6.6*Y_SCALE));

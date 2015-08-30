@@ -45,5 +45,14 @@ public class Pose {
         this.angle = angle;
     }
 
-
+    public String toString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("pose x:");
+        stringBuilder.append(this.x);
+        stringBuilder.append(", y:");
+        stringBuilder.append(y);
+        stringBuilder.append(" , angle: ");
+        stringBuilder.append(this.angle);
+        return stringBuilder.toString();
+    }
 }

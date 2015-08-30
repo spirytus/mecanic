@@ -16,7 +16,7 @@ public class ScanPlayer {
             List<MapPoint> mapPoints = history.get(i);
 
             //List<List<Integer>> edges = Positioner.findEdges(mapPoints);
-            //Positioner.printDistancesToWall(mapPoints, edges);
+            //Positioner.getCurrentPose(mapPoints, edges);
 
             final Visualizer demo = new Visualizer("XY Series Demo", mapPoints);
             demo.pack();
