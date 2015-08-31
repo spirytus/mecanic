@@ -36,10 +36,10 @@ public class VelocityVector implements  IVector{
 
     public WheelsVelocity toWheelsVelocity(){
         Matrix matrix4x3 = new Matrix(new double[][]{
-                {1.0, 1.0, -(HALF_OF_HEIGHT + HALF_OF_WIDTH)},
-                {1.0 , -1.0, HALF_OF_HEIGHT + HALF_OF_WIDTH},
                 {1.0, -1.0, -(HALF_OF_HEIGHT + HALF_OF_WIDTH)},
-                {1.0, 1.0, HALF_OF_HEIGHT + HALF_OF_WIDTH}
+                {1.0 , 1.0, HALF_OF_HEIGHT + HALF_OF_WIDTH},
+                {1.0, 1.0, -(HALF_OF_HEIGHT + HALF_OF_WIDTH)},
+                {1.0, -1.0, HALF_OF_HEIGHT + HALF_OF_WIDTH}
         });
         Matrix matrix3x1 = new Matrix(new double[][]{
                 {this.getVx()},
@@ -47,6 +47,7 @@ public class VelocityVector implements  IVector{
                 {this.getWt()}
         });
         Matrix result = matrix4x3.times(matrix3x1).times(1 / WHEEL_RADIUS);
+        // TODO : Dlaczego tu potrzeba minusa ?s
         return new WheelsVelocity(result.get(0,0), result.get(1,0), result.get(2,0), result.get(3,0));
     }
 
@@ -55,6 +56,15 @@ public class VelocityVector implements  IVector{
         Utils.applyOnRobot(roboclawProxy, wheelsVelocity);
 
 
+    }
+
+    public String toString(){
+        return "X: "+ this.getVx() + " Y: " + this.getVy() + " Wz " + this.getWt();
+    }
+
+    public static void main(String args[]){
+        System.out.println(new VelocityVector(0, 10000, 3).toWheelsVelocity());
+        System.out.println(new VelocityVector(0, 1000, 0).toWheelsVelocity());
     }
 
 }
