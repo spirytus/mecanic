@@ -39,6 +39,6 @@ with open('track.csv', 'wa') as csvfile:
     for i in range(0,68):
         spamwriter.writerow([ys[i]*1.0, xs[i]*1.0, 90.0])
 
-plt.plot(ys, xs, 'ro')
+plt.plot(xs, ys, 'ro')
 plt.axis([0, 2500, 0, 2500])
 plt.show()
