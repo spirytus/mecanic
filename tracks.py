@@ -4,41 +4,55 @@ import matplotlib.pyplot as plt
 import csv
 import math
 
-X_SCALE = 158.6
-Y_SCALE = 228.0
+def plot(xs,ys):
+    plt.plot(xs, ys, 'ro')
+    plt.axis([0, 2500, 0, 2500])
+    plt.show()
 
-X_MAP_SIZE = 2280
-Y_MAP_SIZE = 2380
+def semi_osemka():
+    X_SCALE = 158.6
+    Y_SCALE = 228.0
+    X_MAP_SIZE = 2280
+    Y_MAP_SIZE = 2380
+    A = 400.0
+    B = 1.0/267.5
+    X = 1150.0
+    X_start = 300
+    X_end = X_MAP_SIZE - X_start
+    Xs = range(X_start, X_end, 50)
+    Xs = [y*1.0 for y in Xs]
+    points = []
+    points += [(x, A*math.sin(B*x+200) + 1000.0 ) for x in Xs]
+    points += [(x, -A*math.sin(B*x+200) + 1000.0) for x in Xs[::-1]]
+    xs = [x for x,_ in points]
+    ys = [y for _,y in points]
+    with open('osemka.csv', 'wa') as csvfile:
+        spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
+        for i in range(0,68):
+            spamwriter.writerow([ys[i]*1.0, xs[i]*1.0, 90.0])
+    #plot(xs,ys)
 
-#x = [5.0, 6.0, 6.6, 7.0, 7.3, 7.0, 5.0, 4.0,3.4,3.0,2.7,3.0,5.0,6.0,6.6,7.0,7.3,7.0,5.0,4.0,3.4,3.0,2.7,3.0]
-#y = [2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
-#xs = [x1*X_SCALE for x1 in x]
-#ys = [y1*Y_SCALE for y1 in y]
+def bezier():
+    x = P(300, 1000, 1400, 1800)
+    y = P(600, 2500, 100,  1800)
+    xs =[]
+    ys=[]
+    for t in range(1, 101, 2):
+        xs.append(x(t*0.01))
+        ys.append(y(t*0.01))
+    print len(xs), len(ys)
+    with open('bezier.csv', 'wa') as csvfile:
+        spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
+        for i in range(0,50):
+            spamwriter.writerow([ys[i]*1.0, xs[i]*1.0, 90.0])
+    #plot(xs,ys)
 
-A = 400.0
-B = 1.0/300.0
+def P(A, B, C, D):
+    def xy(t):
+        return A*math.pow(1-t,3)+3*B*t*math.pow(1-t,2) + 3*C*t*t*(1-t)+D*t*t*t
+    return xy
 
-X = 1150.0
-X_start = 300
-X_end = X_MAP_SIZE - X_start
 
-Xs = range(X_start, X_end, 50)
-Xs = [y*1.0 for y in Xs]
-
-points = []
-points += [(x, A*math.sin(B*x+50.) + 1000.0 ) for x in Xs]
-points += [(x, -A*math.sin(B*x+50.) + 1000.0) for x in Xs[::-1]]
-
-print points
-
-xs = [x for x,_ in points]
-ys = [y for _,y in points]
-
-with open('track.csv', 'wa') as csvfile:
-    spamwriter = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
-    for i in range(0,68):
-        spamwriter.writerow([ys[i]*1.0, xs[i]*1.0, 90.0])
-
-plt.plot(xs, ys, 'ro')
-plt.axis([0, 2500, 0, 2500])
-plt.show()
+if __name__ == '__main__':
+    semi_osemka()
+    bezier()
